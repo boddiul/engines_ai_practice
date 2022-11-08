@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include <functional>
 #include <vector>
+#include <limits.h>
 #include "math.h"
 #include "dungeonGen.h"
 #include "dungeonUtils.h"
