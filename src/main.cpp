@@ -2,6 +2,7 @@
 #include <functional>
 #include <vector>
 #include <limits>
+#include <cmath>
 #include "math.h"
 #include "dungeonGen.h"
 #include "dungeonUtils.h"
@@ -43,7 +44,7 @@ static std::vector<Position> reconstruct_path(std::vector<Position> prev, Positi
 
 static std::vector<Position> find_path_a_star(const char *input, size_t width, size_t height, Position from, Position to)
 {
-  if (from.x < 0 || from.y < 0 || from.x >= width || from.y >= height)
+  if (from.x < 0 || from.y < 0 || from.x >= int(width) || from.y >= int(height))
     return std::vector<Position>();
   size_t inpSize = width * height;
 
@@ -51,8 +52,8 @@ static std::vector<Position> find_path_a_star(const char *input, size_t width, s
   std::vector<float> f(inpSize, std::numeric_limits<float>::max());
   std::vector<Position> prev(inpSize, {-1,-1});
 
-  auto getG = [&](Position p) -> float { return g[p.y * width + p.x]; };
-  auto getF = [&](Position p) -> float { return f[p.y * width + p.x]; };
+  auto getG = [&](Position p) -> float { return g[coord_to_idx(p.x, p.y, width)]; };
+  auto getF = [&](Position p) -> float { return f[coord_to_idx(p.x, p.y, width)]; };
 
   auto heuristic = [](Position lhs, Position rhs) -> float
   {
@@ -67,9 +68,9 @@ static std::vector<Position> find_path_a_star(const char *input, size_t width, s
 
   while (!openList.empty())
   {
-    int bestIdx = 0;
+    size_t bestIdx = 0;
     float bestScore = getF(openList[0]);
-    for (int i = 1; i < openList.size(); ++i)
+    for (size_t i = 1; i < openList.size(); ++i)
     {
       float score = getF(openList[i]);
       if (score < bestScore)
@@ -88,7 +89,7 @@ static std::vector<Position> find_path_a_star(const char *input, size_t width, s
     auto checkNeighbour = [&](Position p)
     {
       // out of bounds
-      if (p.x < 0 || p.y < 0 || p.x >= width || p.y >= height)
+      if (p.x < 0 || p.y < 0 || p.x >= int(width) || p.y >= int(height))
         return;
       size_t idx = coord_to_idx(p.x, p.y, width);
       // not empty
@@ -155,7 +156,7 @@ int main(int /*argc*/, const char ** /*argv*/)
   {
     // pick pos
     Vector2 mousePosition = GetScreenToWorld2D(GetMousePosition(), camera);
-    Position p(int(mousePosition.x), int(mousePosition.y));
+    Position p{int(mousePosition.x), int(mousePosition.y)};
     if (IsMouseButtonPressed(2))
     {
       size_t idx = coord_to_idx(p.y, p.y, dungWidth);
