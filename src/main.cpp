@@ -6,14 +6,20 @@
 #include "dungeonGen.h"
 #include "dungeonUtils.h"
 
-static void draw_nav_grid(const char *input, int width, int height)
+template<typename T>
+static size_t coord_to_idx(T x, T y, size_t w)
 {
-  for (int y = 0; y < height; ++y)
-    for (int x = 0; x < width; ++x)
+  return size_t(y) * w + size_t(x);
+}
+
+static void draw_nav_grid(const char *input, size_t width, size_t height)
+{
+  for (size_t y = 0; y < height; ++y)
+    for (size_t x = 0; x < width; ++x)
     {
-      char symb = input[y * width + x];
+      char symb = input[coord_to_idx(x, y, width)];
       Color color = GetColor(symb == ' ' ? 0xeeeeeeff : symb == 'o' ? 0x7777ffff : 0x222222ff);
-      DrawPixel(x, y, color);
+      DrawPixel(int(x), int(y), color);
     }
 }
 
@@ -27,15 +33,15 @@ static std::vector<Position> reconstruct_path(std::vector<Position> prev, Positi
 {
   Position curPos = to;
   std::vector<Position> res = {curPos};
-  while (prev[curPos.y * width + curPos.x] != Position(-1, -1))
+  while (prev[coord_to_idx(curPos.x, curPos.y, width)] != Position{-1, -1})
   {
-    curPos = prev[curPos.y * width + curPos.x];
+    curPos = prev[coord_to_idx(curPos.x, curPos.y, width)];
     res.insert(res.begin(), curPos);
   }
   return res;
 }
 
-static std::vector<Position> find_path_a_star(const char *input, int width, int height, Position from, Position to)
+static std::vector<Position> find_path_a_star(const char *input, size_t width, size_t height, Position from, Position to)
 {
   if (from.x < 0 || from.y < 0 || from.x >= width || from.y >= height)
     return std::vector<Position>();
@@ -53,8 +59,8 @@ static std::vector<Position> find_path_a_star(const char *input, int width, int 
     return sqrtf(square(float(lhs.x - rhs.x)) + square(float(lhs.y - rhs.y)));
   };
 
-  g[from.y * width + from.x] = 0;
-  f[from.y * width + from.x] = heuristic(from, to);
+  g[coord_to_idx(from.x, from.y, width)] = 0;
+  f[coord_to_idx(from.x, from.y, width)] = heuristic(from, to);
 
   std::vector<Position> openList = {from};
   std::vector<Position> closedList;
@@ -84,7 +90,7 @@ static std::vector<Position> find_path_a_star(const char *input, int width, int 
       // out of bounds
       if (p.x < 0 || p.y < 0 || p.x >= width || p.y >= height)
         return;
-      int idx = p.y * width + p.x;
+      size_t idx = coord_to_idx(p.x, p.y, width);
       // not empty
       if (input[idx] == '#')
         return;
@@ -109,7 +115,7 @@ static std::vector<Position> find_path_a_star(const char *input, int width, int 
   return std::vector<Position>();
 }
 
-void draw_nav_data(const char *input, int width, int height, Position from, Position to)
+void draw_nav_data(const char *input, size_t width, size_t height, Position from, Position to)
 {
   draw_nav_grid(input, width, height);
   std::vector<Position> path = find_path_a_star(input, width, height, from, to);
@@ -152,8 +158,8 @@ int main(int /*argc*/, const char ** /*argv*/)
     Position p(int(mousePosition.x), int(mousePosition.y));
     if (IsMouseButtonPressed(2))
     {
-      int idx = p.y * dungWidth + p.x;
-      if (idx >= 0 && idx < dungWidth * dungHeight)
+      size_t idx = coord_to_idx(p.y, p.y, dungWidth);
+      if (idx < dungWidth * dungHeight)
         navGrid[idx] = navGrid[idx] == ' ' ? '#' : navGrid[idx] == '#' ? 'o' : ' ';
     }
     else if (IsMouseButtonPressed(0))
