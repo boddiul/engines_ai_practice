@@ -7,7 +7,6 @@
 #include <functional> // std::bind
 #include "math.h"
 #include <limits>
-#include <limits.h>
 #include "raylib.h"
 
 Position gen_random_dir()
@@ -66,7 +65,7 @@ void gen_drunk_dungeon(char *tiles, const size_t w, const size_t h,
   for (size_t i = 0; i < startPos.size()-1; ++i)
   {
     const Position &spos = startPos[i];
-    float closestDistSq = FLT_MAX;
+    float closestDistSq = std::numeric_limits<float>::max();
     Position closestPos = spos;
     for (size_t j = i+1; j < startPos.size(); ++j)
     {

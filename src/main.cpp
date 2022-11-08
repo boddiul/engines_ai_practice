@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include <functional>
 #include <vector>
-#include <limits.h>
+#include <limits>
 #include "math.h"
 #include "dungeonGen.h"
 #include "dungeonUtils.h"
@@ -41,8 +41,8 @@ static std::vector<Position> find_path_a_star(const char *input, int width, int 
     return std::vector<Position>();
   size_t inpSize = width * height;
 
-  std::vector<float> g(inpSize, FLT_MAX);
-  std::vector<float> f(inpSize, FLT_MAX);
+  std::vector<float> g(inpSize, std::numeric_limits<float>::max());
+  std::vector<float> f(inpSize, std::numeric_limits<float>::max());
   std::vector<Position> prev(inpSize, {-1,-1});
 
   auto getG = [&](Position p) -> float { return g[p.y * width + p.x]; };
