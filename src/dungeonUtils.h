@@ -8,4 +8,4 @@ namespace dungeon
   constexpr char water = 'o';
 
   Position find_walkable_tile(const char *dungeon, const size_t width, const size_t height);
-};
+}

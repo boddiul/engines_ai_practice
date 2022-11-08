@@ -7,6 +7,7 @@
 #include <functional> // std::bind
 #include "math.h"
 #include <limits>
+#include <limits.h>
 #include "raylib.h"
 
 Position gen_random_dir()
@@ -100,8 +101,8 @@ void spill_drunk_water(char *tiles, const size_t w, const size_t h,
   {
     Position p = dungeon::find_walkable_tile(tiles, w, h);
     // select random point on map
-    size_t x = p.x;
-    size_t y = p.y;
+    size_t x = size_t(p.x);
+    size_t y = size_t(p.y);
     size_t numSpills = 0;
     while (numSpills < max_spills)
     {
@@ -117,7 +118,7 @@ void spill_drunk_water(char *tiles, const size_t w, const size_t h,
         const Position dir = gen_random_dir(); // 0 - right, 1 - up, 2 - left, 3 - down
         int newX = std::min(std::max(int(x) + dir.x, 1), int(w) - 2);
         int newY = std::min(std::max(int(y) + dir.y, 1), int(h) - 2);
-        if (tiles[newY * w + newX] != dungeon::wall)
+        if (tiles[size_t(newY) * w + size_t(newX)] != dungeon::wall)
         {
           x = size_t(newX);
           y = size_t(newY);
