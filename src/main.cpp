@@ -149,7 +149,7 @@ int main(int /*argc*/, const char ** /*argv*/)
 
   Camera2D camera = { {0, 0}, {0, 0}, 0.f, 1.f };
   //camera.offset = Vector2{ width * 0.5f, height * 0.5f };
-  camera.zoom = 10.f;
+  camera.zoom = float(height) / float(dungHeight);
 
   SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
   while (!WindowShouldClose())
@@ -157,9 +157,9 @@ int main(int /*argc*/, const char ** /*argv*/)
     // pick pos
     Vector2 mousePosition = GetScreenToWorld2D(GetMousePosition(), camera);
     Position p{int(mousePosition.x), int(mousePosition.y)};
-    if (IsMouseButtonPressed(2))
+    if (IsMouseButtonPressed(2) || IsKeyPressed(KEY_Q))
     {
-      size_t idx = coord_to_idx(p.y, p.y, dungWidth);
+      size_t idx = coord_to_idx(p.x, p.y, dungWidth);
       if (idx < dungWidth * dungHeight)
         navGrid[idx] = navGrid[idx] == ' ' ? '#' : navGrid[idx] == '#' ? 'o' : ' ';
     }
