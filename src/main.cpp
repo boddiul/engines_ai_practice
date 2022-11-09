@@ -85,6 +85,8 @@ static std::vector<Position> find_path_a_star(const char *input, size_t width, s
     openList.erase(openList.begin() + bestIdx);
     if (std::find(closedList.begin(), closedList.end(), curPos) != closedList.end())
       continue;
+    size_t idx = coord_to_idx(curPos.x, curPos.y, width);
+    DrawPixel(curPos.x, curPos.y, Color{uint8_t(g[idx]), uint8_t(g[idx]), 0, 100});
     closedList.emplace_back(curPos);
     auto checkNeighbour = [&](Position p)
     {
